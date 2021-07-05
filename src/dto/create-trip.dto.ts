@@ -1,5 +1,6 @@
 /* eslint-disable prettier/prettier */
-export class CreatePostDto {
+export class CreateTripDto {
+  id: number;
   destination: string;
   start_date: Date;
   end_date: Date;

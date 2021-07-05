@@ -1,6 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
+import { CreateTripDto } from './dto/create-trip.dto';
 import { CreateUserDto } from './dto/create-user.dto';
 import { Trip } from './trip.entity';
 import { User } from './user.entity';
@@ -61,6 +62,15 @@ export class AppService {
   async deleteUser(id: number): Promise<User> {
     const user = await this.userRepo.findOne({ id: id });
     await this.userRepo.delete(user);
+    return user;
+  }
+
+  async createTrip(id: number, createTripDto: CreateTripDto): Promise<User> {
+    const trip = this.tripRepo.create({ ...createTripDto, id: Date.now() });
+    await this.tripRepo.save(trip);
+    const user = await this.userRepo.findOne({ id: id });
+    trip.employeeId = user.id;
+    await this.tripRepo.save(trip);
     return user;
   }
 }

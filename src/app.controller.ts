@@ -2,6 +2,7 @@ import { Body, Delete, Param, Post } from '@nestjs/common';
 import { Put } from '@nestjs/common';
 import { Controller, Get } from '@nestjs/common';
 import { AppService } from './app.service';
+import { CreateTripDto } from './dto/create-trip.dto';
 import { CreateUserDto } from './dto/create-user.dto';
 
 @Controller()
@@ -32,5 +33,9 @@ export class AppController {
   deleteUser(@Param('id') id: number): any {
     // await this.appService.seed();
     return this.appService.deleteUser(id);
+  }
+  @Post(':id/trip')
+  createTrip(@Param('id') id: number, @Body() body: CreateTripDto): any {
+    return this.appService.createTrip(id, body);
   }
 }
