@@ -5,7 +5,8 @@ import { CreateTripDto } from './dto/create-trip.dto';
 import { CreateUserDto } from './dto/create-user.dto';
 import { Trip } from './trip.entity';
 import { User } from './user.entity';
-
+import * as bcrypt from 'bcrypt';
+import { UnauthorizedException } from '@nestjs/common';
 @Injectable()
 export class AppService {
   constructor(
@@ -50,8 +51,23 @@ export class AppService {
   }
   async createUser(createUserDto: CreateUserDto): Promise<User> {
     const user = this.userRepo.create({ id: Date.now(), ...createUserDto });
+    console.log(createUserDto.Password);
+    const pass = await bcrypt.hash(createUserDto.Password, 10);
+    console.log(pass);
+    user.Password = pass;
     await this.userRepo.save(user);
     return user;
+  }
+  async loginUser(createUserDto: CreateUserDto): Promise<any> {
+    console.log(createUserDto);
+    const user = await this.userRepo.findOne({ Name: createUserDto.Name });
+    const match = await bcrypt.compare(createUserDto.Password, user.Password);
+    if (match) {
+      return user;
+    } else {
+      throw new UnauthorizedException();
+    }
+    return null;
   }
   async updateUser(id: number, createUserDto: CreateUserDto): Promise<User> {
     const user = await this.userRepo.findOne({ id: id });
@@ -64,13 +80,28 @@ export class AppService {
     await this.userRepo.delete(user);
     return user;
   }
-
   async createTrip(id: number, createTripDto: CreateTripDto): Promise<User> {
     const trip = this.tripRepo.create({ ...createTripDto, id: Date.now() });
     await this.tripRepo.save(trip);
     const user = await this.userRepo.findOne({ id: id });
     trip.employeeId = user.id;
     await this.tripRepo.save(trip);
+    return user;
+  }
+  async updateTrip(id: number, createTripDto: CreateTripDto): Promise<Trip> {
+    const trip = await this.tripRepo.findOne({ id: id });
+    await this.tripRepo.save({ ...trip, ...createTripDto });
+    return trip;
+  }
+  async deleteTrip(id: number): Promise<Trip> {
+    const trip = await this.tripRepo.findOne({ id: id });
+    console.log(trip);
+    await this.tripRepo.remove(trip);
+    return trip;
+  }
+  async registerUser(createUserDto: CreateUserDto): Promise<User> {
+    const user = this.userRepo.create({ ...createUserDto });
+    await this.userRepo.save(user);
     return user;
   }
 }
