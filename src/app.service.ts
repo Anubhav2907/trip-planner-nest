@@ -13,37 +13,6 @@ export class AppService {
     @InjectRepository(User) private userRepo: Repository<User>,
     @InjectRepository(Trip) private tripRepo: Repository<Trip>,
   ) {}
-  async seed() {
-    await this.userRepo.delete({});
-    const user = this.userRepo.create({
-      Name: 'user1',
-      Email: 'asx@gmail.com',
-    });
-    await this.userRepo.save(user);
-
-    const user2 = this.userRepo.create({
-      Name: 'user2',
-      Email: 'asxs@gmail.com',
-    });
-    await this.userRepo.save(user2);
-
-    const trip1 = this.tripRepo.create({
-      destination: 'New York',
-      start_date: new Date(2021, 1, 1),
-      end_date: new Date(2021, 6, 6),
-      comment: 'amazing',
-    });
-    const trip2 = this.tripRepo.create({
-      destination: 'New Jersey',
-      start_date: new Date(2021, 1, 1),
-      end_date: new Date(2021, 6, 6),
-      comment: 'trip was amazing',
-    });
-    user.trips = [trip1, trip2];
-    await this.tripRepo.save(trip1);
-    await this.tripRepo.save(trip2);
-    await this.userRepo.save(user);
-  }
   async getUsers(): Promise<User[]> {
     return this.userRepo.find({
       relations: ['trips'],
@@ -63,6 +32,21 @@ export class AppService {
       return user;
     }
   }
+  // async createAdmin(createUserDto: CreateUserDto): Promise<any> {
+  //   const user = this.userRepo.create({ id: Date.now(), ...createUserDto });
+  //   const a = await this.userRepo.findOne({ Email: createUserDto.Email });
+  //   if (a) {
+  //     return 'User already exists';
+  //   } else {
+  //     console.log(createUserDto.Password);
+  //     const pass = await bcrypt.hash(createUserDto.Password, 10);
+  //     console.log(pass);
+  //     user.Password = pass;
+  //     user.Role = 'Admin';
+  //     await this.userRepo.save(user);
+  //     return user;
+  //   }
+  // }
   async loginUser(createUserDto: CreateUserDto): Promise<any> {
     console.log(createUserDto);
     const user = await this.userRepo.findOne({ Name: createUserDto.Name });

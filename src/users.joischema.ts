@@ -7,4 +7,6 @@ export default Joi.object<CreateUserDto>({
   Email: Joi.string().required(),
 
   Password: Joi.string().min(3).required(),
+
+  Role: Joi.string().valid('User', 'Manager').required(),
 });
