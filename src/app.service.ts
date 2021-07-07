@@ -49,14 +49,19 @@ export class AppService {
       relations: ['trips'],
     });
   }
-  async createUser(createUserDto: CreateUserDto): Promise<User> {
+  async createUser(createUserDto: CreateUserDto): Promise<any> {
     const user = this.userRepo.create({ id: Date.now(), ...createUserDto });
-    console.log(createUserDto.Password);
-    const pass = await bcrypt.hash(createUserDto.Password, 10);
-    console.log(pass);
-    user.Password = pass;
-    await this.userRepo.save(user);
-    return user;
+    const a = await this.userRepo.findOne({ Email: createUserDto.Email });
+    if (a) {
+      return 'User already exists';
+    } else {
+      console.log(createUserDto.Password);
+      const pass = await bcrypt.hash(createUserDto.Password, 10);
+      console.log(pass);
+      user.Password = pass;
+      await this.userRepo.save(user);
+      return user;
+    }
   }
   async loginUser(createUserDto: CreateUserDto): Promise<any> {
     console.log(createUserDto);
@@ -79,6 +84,17 @@ export class AppService {
     const user = await this.userRepo.findOne({ id: id });
     await this.userRepo.delete(user);
     return user;
+  }
+  async getTrips(id: number, page: number): Promise<Trip[]> {
+    const trips = await this.tripRepo.find({ employeeId: id });
+    page = page - 1;
+    const start = page * 6;
+    const end = start + 6;
+    const arr = [];
+    for (let i = start; i < end; i++) {
+      arr.push(trips[i]);
+    }
+    return arr;
   }
   async createTrip(id: number, createTripDto: CreateTripDto): Promise<User> {
     const trip = this.tripRepo.create({ ...createTripDto, id: Date.now() });

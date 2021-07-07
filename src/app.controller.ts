@@ -11,15 +11,18 @@ import {
   UseGuards,
   UsePipes,
 } from '@nestjs/common';
+import Joi from '@hapi/joi';
 import { AppService } from './app.service';
 import { AuthService } from './auth/auth.service';
 import { JwtAuthGuard } from './auth/jwt-auth.guard';
 // import { AuthenticatedGuard } from './auth/authenticated.guard';
-import { LocalAuthGuard } from './auth/local-auth.guard';
+// import { LocalAuthGuard } from './auth/local-auth.guard';
 import { CreateTripDto } from './dto/create-trip.dto';
 import { CreateUserDto } from './dto/create-user.dto';
 import { JoiValidationPipe } from './validation';
-
+import UsersSchema from './users.joischema';
+import tripsJoischema from './trips.joischema';
+import { Query } from '@nestjs/common';
 @Controller()
 export class AppController {
   constructor(
@@ -40,10 +43,16 @@ export class AppController {
   async getUsers(): Promise<any> {
     return this.appService.getUsers();
   }
+
   @Post('users')
-  @UsePipes(JoiValidationPipe)
-  createUser(@Body() body: CreateUserDto): any {
+  createUser(
+    @Body(new JoiValidationPipe(UsersSchema)) body: CreateUserDto,
+  ): any {
     return this.appService.createUser(body);
+  }
+  @Get(':id/trips')
+  getTrips(@Param('id') id: number, @Query('page') page: number): any {
+    return this.appService.getTrips(id, page);
   }
   @Post('users/login')
   login(@Body() body: CreateUserDto): any {
@@ -58,7 +67,10 @@ export class AppController {
     return this.appService.deleteUser(id);
   }
   @Post(':id/trip')
-  createTrip(@Param('id') id: number, @Body() body: CreateTripDto): any {
+  createTrip(
+    @Param('id') id: number,
+    @Body(new JoiValidationPipe(tripsJoischema)) body: CreateTripDto,
+  ): any {
     return this.appService.createTrip(id, body);
   }
   @Put('trip/:id')
