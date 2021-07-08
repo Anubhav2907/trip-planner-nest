@@ -1,6 +1,7 @@
 /* eslint-disable prettier/prettier */
 import { Injectable } from '@nestjs/common';
 import { PassportStrategy } from '@nestjs/passport';
+import { request } from 'express';
 import { Strategy, ExtractJwt } from 'passport-jwt';
 @Injectable()
 export class JwtStrategy extends PassportStrategy(Strategy) {
@@ -8,10 +9,11 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
     super({
       jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
       secretOrKey: 'secret',
-      ignoreExpiration: true,
+      ignoreExpiration: false,
     });
   }
   async validate(payload: any) {
+    console.log(payload);
     return {
       id: payload.sub,
       name: payload.name,

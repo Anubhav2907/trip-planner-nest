@@ -9,9 +9,8 @@ import {
   Put,
   Request,
   UseGuards,
-  UsePipes,
 } from '@nestjs/common';
-import Joi from '@hapi/joi';
+// import Joi from '@hapi/joi';
 import { AppService } from './app.service';
 import { AuthService } from './auth/auth.service';
 import { JwtAuthGuard } from './auth/jwt-auth.guard';
@@ -40,7 +39,8 @@ export class AppController {
   }
   @UseGuards(JwtAuthGuard)
   @Get('users')
-  async getUsers(): Promise<any> {
+  async getUsers(@Request() req): Promise<any> {
+    console.log(req.user);
     return this.appService.getUsers();
   }
 
@@ -57,6 +57,10 @@ export class AppController {
   @Post('users/login')
   login(@Body() body: CreateUserDto): any {
     return this.appService.loginUser(body);
+  }
+  @Get('users/:id')
+  getUser(@Param('id') id: number): any {
+    return this.appService.getUser(id);
   }
   @Put('users/:id')
   updateUser(@Param('id') id: number, @Body() body: CreateUserDto): any {

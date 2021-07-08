@@ -32,21 +32,10 @@ export class AppService {
       return user;
     }
   }
-  // async createAdmin(createUserDto: CreateUserDto): Promise<any> {
-  //   const user = this.userRepo.create({ id: Date.now(), ...createUserDto });
-  //   const a = await this.userRepo.findOne({ Email: createUserDto.Email });
-  //   if (a) {
-  //     return 'User already exists';
-  //   } else {
-  //     console.log(createUserDto.Password);
-  //     const pass = await bcrypt.hash(createUserDto.Password, 10);
-  //     console.log(pass);
-  //     user.Password = pass;
-  //     user.Role = 'Admin';
-  //     await this.userRepo.save(user);
-  //     return user;
-  //   }
-  // }
+  async getUser(id: number): Promise<User> {
+    const user = await this.userRepo.findOne({ id: id });
+    return user;
+  }
   async loginUser(createUserDto: CreateUserDto): Promise<any> {
     console.log(createUserDto);
     const user = await this.userRepo.findOne({ Name: createUserDto.Name });
