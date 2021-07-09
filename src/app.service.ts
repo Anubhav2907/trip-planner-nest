@@ -1,22 +1,40 @@
-import { Injectable } from '@nestjs/common';
+import { BadRequestException, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { CreateTripDto } from './dto/create-trip.dto';
 import { CreateUserDto } from './dto/create-user.dto';
 import { Trip } from './trip.entity';
 import { User } from './user.entity';
+import verify from './utils/utils';
 import * as bcrypt from 'bcrypt';
-import { UnauthorizedException } from '@nestjs/common';
 @Injectable()
 export class AppService {
   constructor(
     @InjectRepository(User) private userRepo: Repository<User>,
     @InjectRepository(Trip) private tripRepo: Repository<Trip>,
   ) {}
-  async getUsers(): Promise<User[]> {
-    return this.userRepo.find({
-      relations: ['trips'],
-    });
+  async getUsers(req: any): Promise<any> {
+    const verification = verify.verifyRole(req.user);
+    if (verification == true) {
+      return this.userRepo.find({
+        relations: ['trips'],
+      });
+    } else {
+      return new BadRequestException(
+        'You are not authorized to view this page',
+      );
+    }
+  }
+  async getUser(id: number, req: any): Promise<any> {
+    const verification = verify.verifyRole(req.user);
+    if (verification == true) {
+      const user = await this.userRepo.findOne({ id: id });
+      return user;
+    } else {
+      return new BadRequestException(
+        'You are not authorized to view this page',
+      );
+    }
   }
   async createUser(createUserDto: CreateUserDto): Promise<any> {
     const user = this.userRepo.create({ id: Date.now(), ...createUserDto });
@@ -32,24 +50,15 @@ export class AppService {
       return user;
     }
   }
-  async getUser(id: number): Promise<User> {
+
+  async updateUser(
+    id: number,
+    createUserDto: CreateUserDto,
+    req: any,
+  ): Promise<User> {
+    console.log('inside sservixe');
+    console.log(req.user);
     const user = await this.userRepo.findOne({ id: id });
-    return user;
-  }
-  async loginUser(createUserDto: CreateUserDto): Promise<any> {
-    console.log(createUserDto);
-    const user = await this.userRepo.findOne({ Name: createUserDto.Name });
-    const match = await bcrypt.compare(createUserDto.Password, user.Password);
-    if (match) {
-      return user;
-    } else {
-      throw new UnauthorizedException();
-    }
-    return null;
-  }
-  async updateUser(id: number, createUserDto: CreateUserDto): Promise<User> {
-    const user = await this.userRepo.findOne({ id: id });
-    // const newUser = { ...user, ...updateUserDto };
     await this.userRepo.save({ ...user, ...createUserDto });
     return user;
   }
@@ -58,16 +67,25 @@ export class AppService {
     await this.userRepo.delete(user);
     return user;
   }
-  async getTrips(id: number, page: number): Promise<Trip[]> {
-    const trips = await this.tripRepo.find({ employeeId: id });
-    page = page - 1;
-    const start = page * 6;
-    const end = start + 6;
-    const arr = [];
-    for (let i = start; i < end; i++) {
-      arr.push(trips[i]);
+  async getTrips(id: number, page: number, req: any): Promise<any> {
+    const user = await this.userRepo.findOne({ id: id });
+    const verification = verify.verifyUser(user, req.user);
+    console.log(verification);
+    if (verification == true) {
+      const trips = await this.tripRepo.find({ employeeId: id });
+      page = page - 1;
+      const start = page * 6;
+      const end = start + 6;
+      const arr = [];
+      for (let i = start; i < end; i++) {
+        arr.push(trips[i]);
+      }
+      return arr;
+    } else {
+      return new BadRequestException(
+        'You are not authorized to view this page',
+      );
     }
-    return arr;
   }
   async createTrip(id: number, createTripDto: CreateTripDto): Promise<User> {
     const trip = this.tripRepo.create({ ...createTripDto, id: Date.now() });
