@@ -55,18 +55,28 @@ export class AppService {
     id: number,
     createUserDto: CreateUserDto,
     req: any,
-  ): Promise<User> {
-    console.log('inside sservixe');
-    console.log(req.user);
+  ): Promise<any> {
     const user = await this.userRepo.findOne({ id: id });
-    await this.userRepo.save({ ...user, ...createUserDto });
-    return user;
+    const verification = verify.verifyUser(user, req.user);
+    if (verification == true) {
+      await this.userRepo.save({ ...user, ...createUserDto });
+      return user;
+    } else {
+      return new BadRequestException(
+        'You are not authorized to view this page',
+      );
+    }
   }
-  async deleteUser(id: number): Promise<User> {
+  async deleteUser(id: number, req: any): Promise<any> {
     const user = await this.userRepo.findOne({ id: id });
-    await this.userRepo.delete(user);
-    return user;
+    const verification = verify.verifyUser(user, req.user);
+    if (verification == true) {
+      await this.userRepo.delete(user);
+      return user;
+    }
+    return new BadRequestException('You are not authorized to view this page');
   }
+
   async getTrips(id: number, page: number, req: any): Promise<any> {
     const user = await this.userRepo.findOne({ id: id });
     const verification = verify.verifyUser(user, req.user);
@@ -87,6 +97,7 @@ export class AppService {
       );
     }
   }
+
   async createTrip(id: number, createTripDto: CreateTripDto): Promise<User> {
     const trip = this.tripRepo.create({ ...createTripDto, id: Date.now() });
     await this.tripRepo.save(trip);
@@ -95,20 +106,38 @@ export class AppService {
     await this.tripRepo.save(trip);
     return user;
   }
-  async updateTrip(id: number, createTripDto: CreateTripDto): Promise<Trip> {
+
+  async updateTrip(
+    id: number,
+    createTripDto: CreateTripDto,
+    req: any,
+  ): Promise<any> {
     const trip = await this.tripRepo.findOne({ id: id });
-    await this.tripRepo.save({ ...trip, ...createTripDto });
-    return trip;
+    const userId = trip.employeeId;
+    const user = await this.userRepo.findOne({ id: userId });
+    const verification = verify.verifyUser(user, req.user);
+    if (verification == true) {
+      await this.tripRepo.save({ ...trip, ...createTripDto });
+      return trip;
+    } else {
+      return new BadRequestException(
+        'You are not authorized to view this page',
+      );
+    }
   }
-  async deleteTrip(id: number): Promise<Trip> {
+
+  async deleteTrip(id: number, req: any): Promise<any> {
     const trip = await this.tripRepo.findOne({ id: id });
-    console.log(trip);
-    await this.tripRepo.remove(trip);
-    return trip;
-  }
-  async registerUser(createUserDto: CreateUserDto): Promise<User> {
-    const user = this.userRepo.create({ ...createUserDto });
-    await this.userRepo.save(user);
-    return user;
+    const userId = trip.employeeId;
+    const user = await this.userRepo.findOne({ id: userId });
+    const verification = verify.verifyUser(user, req.user);
+    if (verification == true) {
+      await this.tripRepo.remove(trip);
+      return trip;
+    } else {
+      return new BadRequestException(
+        'You are not authorized to view this page',
+      );
+    }
   }
 }

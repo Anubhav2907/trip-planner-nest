@@ -34,11 +34,10 @@ export class AppController {
   getHello(@Request() req): string {
     return req.user;
   }
-  @UseGuards(JwtAuthGuard)
-  @Get('users')
-  async getUsers(@Request() req): Promise<any> {
-    console.log(req.user);
-    return this.appService.getUsers(req);
+
+  @Post('login')
+  getlogin(@Body() body: CreateUserDto): any {
+    return this.authService.login(body);
   }
 
   @Post('users')
@@ -47,10 +46,36 @@ export class AppController {
   ): any {
     return this.appService.createUser(body);
   }
-  @Post('login')
-  getlogin(@Body() body: CreateUserDto): any {
-    return this.authService.login(body);
+
+  @UseGuards(JwtAuthGuard)
+  @Get('users')
+  async getUsers(@Request() req): Promise<any> {
+    console.log(req.user);
+    return this.appService.getUsers(req);
   }
+
+  @UseGuards(JwtAuthGuard)
+  @Get('users/:id')
+  getUser(@Param('id') id: number, @Request() req): any {
+    return this.appService.getUser(id, req);
+  }
+
+  @UseGuards(JwtAuthGuard)
+  @Put('users/:id')
+  updateUser(
+    @Param('id') id: number,
+    @Body() body: CreateUserDto,
+    @Request() req,
+  ): any {
+    return this.appService.updateUser(id, body, req);
+  }
+
+  @UseGuards(JwtAuthGuard)
+  @Delete('users/:id')
+  deleteUser(@Param('id') id: number, @Request() req): any {
+    return this.appService.deleteUser(id, req);
+  }
+
   @UseGuards(JwtAuthGuard)
   @Get(':id/trips')
   getTrips(
@@ -60,26 +85,8 @@ export class AppController {
   ): any {
     return this.appService.getTrips(id, page, req);
   }
+
   @UseGuards(JwtAuthGuard)
-  @Get('users/:id')
-  getUser(@Param('id') id: number, @Request() req): any {
-    return this.appService.getUser(id, req);
-  }
-  @Put('users/:id')
-  updateUser(
-    @Param('id') id: number,
-    @Body() body: CreateUserDto,
-    @Request() req,
-  ): any {
-    console.log('*******************');
-    console.log(req.user);
-    console.log('*******************');
-    return this.appService.updateUser(id, body, req);
-  }
-  @Delete('users/:id')
-  deleteUser(@Param('id') id: number): any {
-    return this.appService.deleteUser(id);
-  }
   @Post(':id/trip')
   createTrip(
     @Param('id') id: number,
@@ -87,12 +94,18 @@ export class AppController {
   ): any {
     return this.appService.createTrip(id, body);
   }
+  @UseGuards(JwtAuthGuard)
   @Put('trip/:id')
-  updateTrip(@Param('id') id: number, @Body() body: CreateTripDto): any {
-    return this.appService.updateTrip(id, body);
+  updateTrip(
+    @Param('id') id: number,
+    @Request() req,
+    @Body() body: CreateTripDto,
+  ): any {
+    return this.appService.updateTrip(id, body, req);
   }
+  @UseGuards(JwtAuthGuard)
   @Delete('trip/:id')
-  deleteTrip(@Param('id') id: number): any {
-    return this.appService.deleteTrip(id);
+  deleteTrip(@Param('id') id: number, @Request() req): any {
+    return this.appService.deleteTrip(id, req);
   }
 }
