@@ -78,9 +78,22 @@ export class AppController {
   getTrips(
     @Param('id') id: number,
     @Query('page') page: number,
+    @Query('startDateStarts') startDateStarts: Date,
+    @Query('startDateEnds') startDateEnds: Date,
+    @Query('endDateStarts') endDateStarts: Date,
+    @Query('endDateEnds') endDateEnds: Date,
+
     @Request() req,
   ): any {
-    return this.appService.getTrips(id, page, req);
+    return this.appService.getTrips(
+      id,
+      page,
+      req,
+      startDateStarts,
+      startDateEnds,
+      endDateStarts,
+      endDateEnds,
+    );
   }
 
   @UseGuards(JwtAuthGuard)
