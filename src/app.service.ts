@@ -10,11 +10,13 @@ import * as bcrypt from 'bcrypt';
 import verifyTrip from './utils/trip';
 import dateConversion from './utils/dateConversion';
 import convertMonth from './utils/monthConverter';
+import { JWT } from './entities/jwt.entity';
 @Injectable()
 export class AppService {
   constructor(
     @InjectRepository(User) private userRepo: Repository<User>,
     @InjectRepository(Trip) private tripRepo: Repository<Trip>,
+    @InjectRepository(JWT) private jwtRepo: Repository<JWT>,
   ) {}
   async getUsers(req: any): Promise<any> {
     const verification = verify.verifyRole(req.user);

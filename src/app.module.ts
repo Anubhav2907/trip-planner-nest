@@ -6,6 +6,7 @@ import { AuthModule } from './auth/auth.module';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { User } from './entities/user.entity';
 import { Trip } from './entities/trip.entity';
+import { JWT } from './entities/jwt.entity';
 
 @Module({
   imports: [
@@ -18,7 +19,7 @@ import { Trip } from './entities/trip.entity';
       synchronize: true,
       logging: true,
     }),
-    TypeOrmModule.forFeature([User, Trip]),
+    TypeOrmModule.forFeature([User, Trip, JWT]),
   ],
   controllers: [AppController],
   providers: [AppService],

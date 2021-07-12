@@ -31,7 +31,11 @@ export class AppController {
   getHello(@Request() req): string {
     return req.user;
   }
-
+  @UseGuards(JwtAuthGuard)
+  @Get('expired')
+  getExpiredTokens(): any {
+    return this.authService.getExpiredTokens();
+  }
   @Post('user/login')
   getlogin(@Body() body: CreateUserDto): any {
     return this.authService.login(body);

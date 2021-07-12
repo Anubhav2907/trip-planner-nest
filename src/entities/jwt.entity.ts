@@ -2,7 +2,7 @@
 import { BaseEntity, Column, Entity, PrimaryGeneratedColumn } from 'typeorm';
 
 @Entity()
-export class Trip extends BaseEntity {
+export class JWT extends BaseEntity {
   @PrimaryGeneratedColumn()
   id: number;
 
