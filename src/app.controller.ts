@@ -32,33 +32,37 @@ export class AppController {
     return req.user;
   }
 
-  @Post('login')
+  @Post('user/login')
   getlogin(@Body() body: CreateUserDto): any {
     return this.authService.login(body);
   }
 
-  @Post('users')
+  @Post('user/signup')
   createUser(
     @Body(new JoiValidationPipe(UsersSchema)) body: CreateUserDto,
   ): any {
     return this.appService.createUser(body);
   }
-
   @UseGuards(JwtAuthGuard)
-  @Get('users')
+  @Post('user/logout')
+  getlogout(@Request() req): any {
+    return this.authService.logout(req);
+  }
+  @UseGuards(JwtAuthGuard)
+  @Get('user')
   async getUsers(@Request() req): Promise<any> {
     console.log(req.user);
     return this.appService.getUsers(req);
   }
 
   @UseGuards(JwtAuthGuard)
-  @Get('users/:id')
+  @Get('user/:id')
   getUser(@Param('id') id: number, @Request() req): any {
     return this.appService.getUser(id, req);
   }
 
   @UseGuards(JwtAuthGuard)
-  @Put('users/:id')
+  @Put('user/:id')
   updateUser(
     @Param('id') id: number,
     @Body() body: CreateUserDto,
@@ -68,13 +72,22 @@ export class AppController {
   }
 
   @UseGuards(JwtAuthGuard)
-  @Delete('users/:id')
+  @Delete('user/:id')
   deleteUser(@Param('id') id: number, @Request() req): any {
     return this.appService.deleteUser(id, req);
   }
-
   @UseGuards(JwtAuthGuard)
-  @Get(':id/trips')
+  @Get('/trips/:id')
+  getTrip(@Param('id') id: number, @Request() req): any {
+    return this.appService.getTrip(id, req);
+  }
+  @UseGuards(JwtAuthGuard)
+  @Get('/trip/next_month_plan')
+  getNextMonthPlan(@Request() req): any {
+    return this.appService.getNextMonthPlan(req);
+  }
+  @UseGuards(JwtAuthGuard)
+  @Get('trip/:id')
   getTrips(
     @Param('id') id: number,
     @Query('page') page: number,
@@ -97,7 +110,7 @@ export class AppController {
   }
 
   @UseGuards(JwtAuthGuard)
-  @Post(':id/trip')
+  @Post('trip/:id')
   createTrip(
     @Param('id') id: number,
     @Body(new JoiValidationPipe(tripsJoischema)) body: CreateTripDto,

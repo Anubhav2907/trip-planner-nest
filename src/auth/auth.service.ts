@@ -31,4 +31,9 @@ export class AuthService {
       access_token: this.jwtService.sign(payload),
     };
   }
+  async logout(req: any): Promise<any> {
+    const user = await User.findOne({ id: req.user.id });
+
+    return user;
+  }
 }
