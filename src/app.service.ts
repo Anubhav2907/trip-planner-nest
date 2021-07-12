@@ -3,8 +3,8 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { CreateTripDto } from './dto/create-trip.dto';
 import { CreateUserDto } from './dto/create-user.dto';
-import { Trip } from './trip.entity';
-import { User } from './user.entity';
+import { Trip } from './entities/trip.entity';
+import { User } from './entities/user.entity';
 import verify from './utils/utils';
 import * as bcrypt from 'bcrypt';
 @Injectable()

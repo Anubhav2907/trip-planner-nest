@@ -10,17 +10,14 @@ import {
   Request,
   UseGuards,
 } from '@nestjs/common';
-// import Joi from '@hapi/joi';
 import { AppService } from './app.service';
 import { AuthService } from './auth/auth.service';
 import { JwtAuthGuard } from './auth/jwt-auth.guard';
-// import { AuthenticatedGuard } from './auth/authenticated.guard';
-// import { LocalAuthGuard } from './auth/local-auth.guard';
 import { CreateTripDto } from './dto/create-trip.dto';
 import { CreateUserDto } from './dto/create-user.dto';
-import { JoiValidationPipe } from './validation';
-import UsersSchema from './users.joischema';
-import tripsJoischema from './trips.joischema';
+import { JoiValidationPipe } from './validations/validation';
+import UsersSchema from './joiSchema/users.joischema';
+import tripsJoischema from './joiSchema/trips.joischema';
 import { Query } from '@nestjs/common';
 @Controller()
 export class AppController {

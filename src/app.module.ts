@@ -4,8 +4,8 @@ import { AppService } from './app.service';
 import { UsersModule } from './users/users.module';
 import { AuthModule } from './auth/auth.module';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { User } from './user.entity';
-import { Trip } from './trip.entity';
+import { User } from './entities/user.entity';
+import { Trip } from './entities/trip.entity';
 
 @Module({
   imports: [
