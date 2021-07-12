@@ -8,6 +8,7 @@ import { User } from './entities/user.entity';
 import verify from './utils/utils';
 import * as bcrypt from 'bcrypt';
 import verifyTrip from './utils/trip';
+import dateConversion from './utils/dateConversion';
 @Injectable()
 export class AppService {
   constructor(
@@ -123,20 +124,25 @@ export class AppService {
         });
         console.log(trips);
         const filteredTrips = [];
-        const convertedStartDate = new Date(startDateStarts)
-          .toString()
-          .split(' ');
-        const convertedEndDate = new Date(startDateEnds).toString().split(' ');
+        const convertedStartDate = dateConversion(startDateStarts);
+        const convertedEndDate = dateConversion(startDateEnds);
+        console.log(convertedStartDate, convertedEndDate);
         for (let i = 0; i < trips.length; i++) {
-          const startDate = new Date(trips[i].start_date).toString().split(' ');
-          const endDate = new Date(trips[i].end_date).toString().split(' ');
+          const startDate = dateConversion(trips[i].start_date);
+          const endDate = dateConversion(trips[i].end_date);
+          console.log(startDate, endDate, convertedStartDate, convertedEndDate);
           if (
-            verifyTrip(startDate, endDate, convertedStartDate, convertedEndDate)
+            verifyTrip.verifyTrip(
+              startDate,
+              endDate,
+              convertedStartDate,
+              convertedEndDate,
+            )
           ) {
             filteredTrips.push(trips[i]);
           }
         }
-        console.log(filteredTrips);
+        // console.log(filteredTrips);
         page = page - 1;
         const start = page * 6;
         const end = start + 6;
@@ -161,15 +167,19 @@ export class AppService {
         });
         console.log(trips);
         const filteredTrips = [];
-        const convertedStartDate = new Date(endDateStarts);
-        const convertedEndDate = new Date(endDateEnds);
-
+        const convertedStartDate = dateConversion(endDateStarts);
+        const convertedEndDate = dateConversion(endDateEnds);
         for (let i = 0; i < trips.length; i++) {
+          const startDate = dateConversion(trips[i].start_date);
+          const endDate = dateConversion(trips[i].end_date);
           if (
-            trips[i].start_date >= convertedStartDate &&
-            trips[i].start_date <= convertedEndDate
+            verifyTrip.verifyTripEnd(
+              startDate,
+              endDate,
+              convertedStartDate,
+              convertedEndDate,
+            )
           ) {
-            console.log(trips[i]);
             filteredTrips.push(trips[i]);
           }
         }
