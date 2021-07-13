@@ -211,27 +211,16 @@ export class AppService {
         const trips = await this.tripRepo.find({
           employeeId: id,
         });
-        console.log(trips);
         const filteredTrips = [];
-        const convertedStartDate = dateConversion(startDateStarts);
-        const convertedEndDate = dateConversion(startDateEnds);
+        const convertedStartDate = new Date(startDateStarts);
+        const convertedEndDate = new Date(startDateEnds);
         console.log(convertedStartDate, convertedEndDate);
         for (let i = 0; i < trips.length; i++) {
-          const startDate = dateConversion(trips[i].start_date);
-          const endDate = dateConversion(trips[i].end_date);
-          console.log(startDate, endDate, convertedStartDate, convertedEndDate);
-          if (
-            verifyTrip.verifyTrip(
-              startDate,
-              endDate,
-              convertedStartDate,
-              convertedEndDate,
-            )
-          ) {
+          const startDate = trips[i].start_date;
+          if (startDate > convertedStartDate && startDate < convertedEndDate) {
             filteredTrips.push(trips[i]);
           }
         }
-        // console.log(filteredTrips);
         page = page - 1;
         const start = page * 6;
         const end = start + 6;
@@ -255,21 +244,12 @@ export class AppService {
         const trips = await this.tripRepo.find({
           employeeId: id,
         });
-        console.log(trips);
         const filteredTrips = [];
-        const convertedStartDate = dateConversion(endDateStarts);
-        const convertedEndDate = dateConversion(endDateEnds);
+        const convertedStartDate = new Date(endDateStarts);
+        const convertedEndDate = new Date(endDateEnds);
         for (let i = 0; i < trips.length; i++) {
-          const startDate = dateConversion(trips[i].start_date);
-          const endDate = dateConversion(trips[i].end_date);
-          if (
-            verifyTrip.verifyTripEnd(
-              startDate,
-              endDate,
-              convertedStartDate,
-              convertedEndDate,
-            )
-          ) {
+          const endDate = trips[i].end_date;
+          if (endDate > convertedStartDate && endDate < convertedEndDate) {
             filteredTrips.push(trips[i]);
           }
         }

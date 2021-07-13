@@ -56,6 +56,7 @@ export class AppController {
   @Get('user')
   async getUsers(@Request() req): Promise<any> {
     console.log(req.user);
+    console.log(req.headers);
     return this.appService.getUsers(req);
   }
 

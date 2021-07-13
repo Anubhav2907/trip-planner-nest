@@ -5,7 +5,6 @@ import { JwtService } from '@nestjs/jwt';
 import { User } from 'src/entities/user.entity';
 import { JWT } from 'src/entities/jwt.entity';
 import { CreateUserDto } from 'src/dto/create-user.dto';
-let a = 'a';
 @Injectable()
 export class AuthService {
   constructor(
@@ -30,19 +29,16 @@ export class AuthService {
       email: user.Email,
       role: user.Role,
     };
-    a = this.jwtService.sign(payload);
     return {
-      access_token: a,
+      access_token: this.jwtService.sign(payload),
     };
   }
   async logout(req: any): Promise<any> {
-    if (a.length > 1) {
-      const token = await JWT.create({ jwttoken: a });
-      await JWT.save(token);
-      return token;
-    } else {
-      return new BadRequestException('Token not found');
-    }
+    const token = req.headers.authorization.slice(7);
+    console.log(token);
+    const newToken = await JWT.create({ jwttoken: token });
+    await JWT.save(newToken);
+    return new BadRequestException('hi');
   }
   async getExpiredTokens(): Promise<any> {
     const tokens = await JWT.find({});
